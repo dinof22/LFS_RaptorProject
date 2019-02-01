@@ -74,7 +74,9 @@ public class UIPopupText : VRTK_DestinationMarker {
                 raptor.Drink_State();
                 break;
             default:
-                print("this area has no action associated with it");
+                print("Im assumine I am Being summoned");
+                raptor.current_State = RaptorAI.states.lookAtPlayer;
+                raptor.lookAtPlayer_state();
                 break;
         }
 

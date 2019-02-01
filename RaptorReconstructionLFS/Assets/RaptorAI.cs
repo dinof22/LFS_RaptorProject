@@ -6,6 +6,8 @@ using UnityEngine.AI;
 
 public class RaptorAI : MonoBehaviour {
 
+    //to add a state, add float (if needed), add a state, countdown (if needed), gen stats, action in path complete check, find min stat, then create state method and action enum
+
 
     public states current_State = states.Idle;
     NavMeshAgent raptorAgent;
@@ -40,6 +42,7 @@ public class RaptorAI : MonoBehaviour {
         Drink,
         Scratch,
         summon,
+        wait,
         lookAtPlayer
 
     };
@@ -82,6 +85,19 @@ public class RaptorAI : MonoBehaviour {
 
     public void pathCompleteCheck()
     {
+        //this changes raptors speed if its being summoned from far away
+        if (current_State == states.summon)
+        {
+            raptorAgent.SetDestination(player_Position.position);
+            if (raptorAgent.remainingDistance > 15)
+            {
+                raptorAgent.speed = 8f;
+            }
+            else
+            {
+                raptorAgent.speed = 2.2f;
+            }
+        }
         if (raptorAgent.pathPending)
         {
             return;
@@ -108,6 +124,9 @@ public class RaptorAI : MonoBehaviour {
                         break;
                     case states.Idle:
                         print("path complete check hitting idle");
+                        break;
+                    case states.summon:
+                        summon_Action();
                         break;
                     case states.lookAtPlayer:
                         StartCoroutine("lookAtPlayer_Action");
@@ -333,10 +352,23 @@ public class RaptorAI : MonoBehaviour {
         raptorAgent.stoppingDistance = 5;
 
     }
+    public void summon_Action()
+    {
+        print("I will wait here until you dismiss me!");
+        current_State = states.wait;
+    }
 
-    public void dismiss()
+    public void dismissButton()
     {
         Find_lowest_stat();
         raptorAgent.stoppingDistance = 2;
     }
+
+    public void summonButton()
+    {
+        current_State = states.summon;
+        Summon_State();
+        raptorAgent.stoppingDistance = 4;
+    }
+
 }
